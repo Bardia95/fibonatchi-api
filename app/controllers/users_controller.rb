@@ -1,23 +1,23 @@
 class UsersController < ApplicationController
-    before_action :authorize_request, except: :create
+    before_action :authorize_user_request, except: :create
     before_action :find_user, except: %i[create index]
   
     # GET /users
     def index
-      @users = User.all
-      render json: @users, status: :ok
+        @users = User.all
+        render json: @users, status: :ok
     end
   
     # GET /users/{username}
     def show
-      render json: @user, status: :ok
+        render json: @user, status: :ok
     end
 
     # POST /users
     def create
         @user = User.new(user_params)
         if @user.save
-            token = JsonWebToken.encode(user_id: @user.id)
+            token = JsonWebToken.encode(username: @user.username)
             time = Time.now + 1000.days.to_i
             render json: { token: token, exp: time.strftime("%m-%d-%Y %H:%M"), user: @user }, status: :ok
         else
@@ -41,15 +41,15 @@ class UsersController < ApplicationController
   
     private
   
-    def find_user
-      @user = User.find_by_username!(params[:_username])
-      rescue ActiveRecord::RecordNotFound
-        render json: { errors: 'User not found' }, status: :not_found
-    end
-  
-    def user_params
-        params.permit(
-            :username, :email, :password, :password_confirmation
-        )
-    end
+      def find_user
+        @user = User.find_by_username!(params[:_username])
+        rescue ActiveRecord::RecordNotFound
+            render json: { errors: 'User not found' }, status: :not_found
+      end
+    
+      def user_params
+          params.permit(
+              :username, :email, :password, :password_confirmation
+          )
+      end
 end

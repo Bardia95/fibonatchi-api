@@ -10,10 +10,39 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_03_07_214903) do
+ActiveRecord::Schema.define(version: 2019_03_09_200551) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "cards", force: :cascade do |t|
+    t.text "question"
+    t.text "answer"
+    t.string "image_url"
+    t.integer "recalled", array: true
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "paragraphs_id"
+    t.index ["paragraphs_id"], name: "index_cards_on_paragraphs_id"
+  end
+
+  create_table "mental_models", force: :cascade do |t|
+    t.string "name"
+    t.string "subject"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "user_id"
+    t.index ["user_id"], name: "index_mental_models_on_user_id"
+  end
+
+  create_table "paragraphs", force: :cascade do |t|
+    t.text "text"
+    t.integer "order"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "mental_models_id"
+    t.index ["mental_models_id"], name: "index_paragraphs_on_mental_models_id"
+  end
 
   create_table "users", force: :cascade do |t|
     t.string "username"
@@ -21,6 +50,11 @@ ActiveRecord::Schema.define(version: 2019_03_07_214903) do
     t.string "password_digest"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "coins"
+    t.integer "points"
   end
 
+  add_foreign_key "cards", "paragraphs", column: "paragraphs_id"
+  add_foreign_key "mental_models", "users"
+  add_foreign_key "paragraphs", "mental_models", column: "mental_models_id"
 end
