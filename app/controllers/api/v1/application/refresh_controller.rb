@@ -1,13 +1,15 @@
 module Api::V1::Authentication
     class RefreshController < ApplicationController
- 
-        def refresh_store
+
+        def rehydrate_database
         end
 
-        def refresh_database
+        def refresh_models
         end
 
     end
+
+
 end
 
 

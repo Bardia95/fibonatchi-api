@@ -26,18 +26,6 @@ module Api::V1::Admin
                     status: :unprocessable_entity
             end
         end
-
-        #POST /login
-        def login
-            @user = User.find_by_email(params[:email])
-            if @user&.authenticate(params[:password])
-                token = JsonWebToken.encode(user_id: @user.id)
-                time = Time.now + 1000.days.to_i
-                render json: { token: token, exp: time.strftime("%m-%d-%Y %H:%M"), username: @user.username }, status: :ok
-            else
-                render json: { error: 'unauthorized' }, status: :unauthorized
-            end
-        end
     
         # PUT /users/{username}
         def update
@@ -59,6 +47,8 @@ module Api::V1::Admin
                 rescue ActiveRecord::RecordNotFound
                     render json: { errors: 'User not found' }, status: :not_found
             end
+
+            def set_master
             
             def user_params
                 params.permit(

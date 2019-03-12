@@ -28,5 +28,19 @@ class ApplicationController < ActionController::API
             render json: { errors: e.message }, status: :unauthorized
         end
     end
+
+
+    def find_user
+        @user = User.find_by! id: params[:id]
+        rescue ActiveRecord::RecordNotFound
+            render json: { errors: 'User not found' }, status: :not_found
+    end
+    
+    def find_paragraph
+        @paragraph = Paragraph.find_by! id: params[:id]
+        rescue ActiveRecord::RecordNotFound
+            render json: { errors: 'Paragraph not found' }, status: :not_found
+    end
+
     
 end

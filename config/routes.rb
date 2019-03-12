@@ -11,10 +11,13 @@ Rails.application.routes.draw do
                 end
             end
             namespace :application do
-                post '/login', to: 'action#login'
-                post '/signup', to: 'action#signup'
-                get '/refresh-store', to: 'action#refresh_store'
-                post '/refresh-database', to: 'action#refresh_database'
+                get '/hydrate-store', to: 'refresh#hydrate-store'
+                post '/rehydrate-database', to: 'refresh#rehydrate_database'
+                get '/refresh-models', to: 'refresh#refresh-models'
+            end
+            namespace :authentication do
+                post '/login', to: 'authentication#login'
+                post '/signup', to: 'authentication#signup'
             end
         end
     end
