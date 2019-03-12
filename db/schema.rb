@@ -22,8 +22,8 @@ ActiveRecord::Schema.define(version: 2019_03_09_200551) do
     t.integer "recalled", array: true
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.bigint "paragraphs_id"
-    t.index ["paragraphs_id"], name: "index_cards_on_paragraphs_id"
+    t.bigint "paragraph_id"
+    t.index ["paragraph_id"], name: "index_cards_on_paragraphs_id"
   end
 
   create_table "mental_models", force: :cascade do |t|
@@ -40,8 +40,8 @@ ActiveRecord::Schema.define(version: 2019_03_09_200551) do
     t.integer "order"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.bigint "mental_models_id"
-    t.index ["mental_models_id"], name: "index_paragraphs_on_mental_models_id"
+    t.bigint "mental_model_id"
+    t.index ["mental_model_id"], name: "index_paragraphs_on_mental_model_id"
   end
 
   create_table "users", force: :cascade do |t|
@@ -54,7 +54,4 @@ ActiveRecord::Schema.define(version: 2019_03_09_200551) do
     t.integer "points"
   end
 
-  add_foreign_key "cards", "paragraphs", column: "paragraphs_id"
-  add_foreign_key "mental_models", "users"
-  add_foreign_key "paragraphs", "mental_models", column: "mental_models_id"
 end

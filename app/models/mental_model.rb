@@ -1,5 +1,6 @@
 class MentalModel < ApplicationRecord
     belongs_to :user
     has_many :paragraphs
-    has_many :cards, through: :paragraphs
+    validates :name, presence: true, uniqueness: true
+    validates :subject, presence: true
 end

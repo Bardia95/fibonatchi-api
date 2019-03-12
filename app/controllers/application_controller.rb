@@ -3,7 +3,7 @@ class ApplicationController < ActionController::API
         render json: { error: 'not_found' }
     end
     
-    def authorize_user_request
+    def authorize_request
         header = request.headers['Authorization']
         header = header.split(' ').last if header
         begin
@@ -21,7 +21,7 @@ class ApplicationController < ActionController::API
         header = header.split(' ').last if header
         begin
             @decoded = JsonWebToken.decode(header)
-            @admin = User.find(@decoded[:username]) if @decoded[:username]
+            @admin = User.find(@decoded[:user_id]) if @decoded[:user_id] == 1
         rescue ActiveRecord::RecordNotFound => e
             render json: { errors: e.message }, status: :unauthorized
         rescue JWT::DecodeError => e
