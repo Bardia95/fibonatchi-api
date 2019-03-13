@@ -1,6 +1,6 @@
 module Api::V1::Admin
     class MentalModelsController < ApplicationController
-        before_action :authorize_request
+        before_action :authorize_admin_request
         before_action :set_user, only: [:create, :index]
         before_action :find_mental_model, except: [:create, :index]
         def show
@@ -13,7 +13,10 @@ module Api::V1::Admin
         end
 
         def create
-            @mental_model =  @user.mental_models.new(mental_model_params)
+            @mental_model =  @user.mental_models.new({
+                name: params[:name], 
+                subject: params[:subject]
+            })
             if @mental_model.save
                 render json: @mental_model, status: :created
             else
@@ -38,11 +41,6 @@ module Api::V1::Admin
         end
     
         private
-
-            def mental_model_params
-                params.permit(:name,:subject)
-            end
-
             def set_user
                 @user = User.find_by! id: params[:user_id]
                 rescue ActiveRecord::RecordNotFound

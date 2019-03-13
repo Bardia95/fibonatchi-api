@@ -1,6 +1,6 @@
 module Api::V1::Admin
     class CardsController < ApplicationController
-        before_action :authorize_request
+        before_action :authorize_admin_request
         before_action :set_paragraph, only: [:create, :index]
         before_action :find_card, except: [:create, :index]
         def show
@@ -13,7 +13,12 @@ module Api::V1::Admin
         end
 
         def create
-            @card = @paragraph.cards.new(card_params)
+            @card = @paragraph.cards.new({
+                question: params[:question],
+                answer: params[:answer],
+                image_url: params[:image_url],
+                user_id: @admin.id 
+            })
             if @card.save
                 render json: @card, status: :created
             else
@@ -38,10 +43,6 @@ module Api::V1::Admin
         end
     
         private
-
-            def card_params
-                params.permit(:question, :answer, :image_url, :recalled)
-            end
 
             def set_paragraph
                 @paragraph = Paragraph.find_by! id: params[:paragraph_id]

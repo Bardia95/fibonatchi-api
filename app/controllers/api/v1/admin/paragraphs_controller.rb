@@ -1,6 +1,6 @@
 module Api::V1::Admin
     class ParagraphsController < ApplicationController
-        before_action :authorize_request
+        before_action :authorize_admin_request
         before_action :set_mental_model, only: [:create, :index]
         before_action :find_paragraph, except: [:create, :index]
         def show
@@ -13,7 +13,13 @@ module Api::V1::Admin
         end
 
         def create
-            @paragraph = @mental_model.paragraphs.new(paragraph_params)
+            @paragraph = @mental_model.paragraphs.new(
+                {
+                    text: params[:text],
+                    order: params[:order],
+                    user_id: @admin.id
+                }
+            )
             if @paragraph.save
                 render json: @paragraph, status: :created
             else
@@ -38,10 +44,6 @@ module Api::V1::Admin
         end
     
         private
-
-            def paragraph_params
-                params.permit(:text, :order)
-            end
 
             def set_mental_model
                 @mental_model = MentalModel.find_by! id: params[:mental_model_id]

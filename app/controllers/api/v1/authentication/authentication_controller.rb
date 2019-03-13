@@ -1,26 +1,34 @@
 module Api::V1::Authentication
     class AuthenticationController < ApplicationController
         
-        # POST /users
+        # POST /api/v1/authentication/signup
         def signup
-            @user = User.new(user_params)
+            get_master
+            @user = User.new({
+                username: params[:username],
+                email: params[:email],
+                password: params[:password],
+                coins: params[:coins],
+                points: params[:points]
+            })
             if @user.save
                 token = JsonWebToken.encode(user_id: @user.id)
                 time = Time.now + 1000.days.to_i
-                render json: { token: token, exp: time.strftime("%m-%d-%Y %H:%M"), user: @user }, status: :ok
+                render json: { token: token, exp: time.strftime("%m-%d-%Y %H:%M"), user: @user, master: @master}, status: :ok
             else
                 render json: { errors: @user.errors.full_messages },
                     status: :unprocessable_entity
             end
         end
 
-        #POST /login
+        # POST /api/v1/authentication/login
         def login
             @user = User.find_by_email(params[:email])
+            get_master
             if @user&.authenticate(params[:password])
                 token = JsonWebToken.encode(user_id: @user.id)
                 time = Time.now + 1000.days.to_i
-                render json: { token: token, exp: time.strftime("%m-%d-%Y %H:%M"), username: @user.username }, status: :ok
+                render json: { token: token, exp: time.strftime("%m-%d-%Y %H:%M"), user: @user }, status: :ok
             else
                 render json: { error: 'unauthorized' }, status: :unauthorized
             end
@@ -30,18 +38,22 @@ module Api::V1::Authentication
 
         private
 
-        # def get_master
-        #     @master = {}
-        #     @master.user = User.find_by! id: 1
-        #     @master.mental_models = @master.user.mental_models
-        #     @master.mental_models.each do |
-        #     @master_paragraphs = @master.mental_model
-            
-
-
-
-    
-
+        def get_master
+            @master = {
+                mental_models: [],
+                paragraphs: [],
+                cards: [],
+            }
+            MentalModel.where(user_id: 1).find_each do |model|
+                @master[:mental_models] << model
+            end
+            Paragraph.where(user_id: 1).find_each do |paragraph|
+                @master[:paragraphs] << paragraph
+            end
+            Card.where(user_id: 1).find_each do |card|
+                @master[:cards] << card
+            end
+        end
     end
 end
 
